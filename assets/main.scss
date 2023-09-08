@@ -1,0 +1,154 @@
+---
+---
+
+@import "minima";
+
+@import "/assets/css/monokai.css";
+
+/*
+* Custom
+*/
+:root {
+  --text: #d2dbef;
+  --subtext0: #becae8;
+  --subtext1: #a1b3e2;
+  --overlay0: #898ea5;
+  --overlay1: #7a7f99;
+  --overlay2: #666c87;
+  --surface0: #4f505e;
+  --surface1: #4f505e;
+  --surface2: #2f303d;
+  --base: #13181e;
+  --mantle: #181a30;
+  --crust: #1a1435;
+  --rebecca: #663399;
+  --pink: #ba55d3;
+  --blam: #512da8;
+  --slate: #7b68ee;
+  --dodger: #1e90ff;
+  --sky: #00bfff;
+}
+.center-image
+{
+    margin: 0 auto;
+    display: block;
+}
+
+/*
+* Minima modification
+*/
+body {
+  color: var(--text);
+  background-color: var(--base);
+}
+.site-header {
+  text-align: center;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: var(--base);
+  box-shadow: 0 1px var(--overlay1);
+  border: 0;
+}
+.site-footer {
+  border-top-style: full;
+  border-top-color: var(--overlay1);
+  border-top-width: 1px;
+}
+
+.post-content h1 {
+  color: var(--subtext0);
+  font-size: 32px;
+  word-wrap: break-word;
+}
+.post-content h2 {
+  color: var(--subtext1);
+  font-size: 26px;
+  word-wrap: break-word;
+}
+.post-content h3 {
+  font-size: 20px;
+  word-wrap: break-word;
+}
+.post-content h4 {
+  font-size: 14px;
+  word-wrap: break-word;
+}
+ul {
+  list-style: disc;
+}
+li::marker {
+  color: var(--blam);
+}
+
+a {
+  color: var(--dodger);
+}
+a:visited {
+  color: var(--slate);
+}
+a:hover {
+  color: var(--dodger);
+}
+
+blockquote {
+  color: var(--subtext0);
+  border-left: 4px solid var(--surface0);
+}
+
+pre,
+code {
+  border: 1px solid var(--overlay1);
+  border-radius: 1px;
+  background-color: var(--mantle);
+}
+
+.svg-icon {
+  fill: var(--blam);
+}
+
+table {
+  color: var(--subtext1);
+  border: var(--overlay1);
+}
+table tr:nth-child(even) {
+  background-color: var(--surface0);
+}
+table th {
+  background-color: var(--surface1);
+}
+table td {
+  border: var(--overlay0);
+}
+.site-title, .site-title:visited {
+  color: var(--pink);
+}
+.site-nav .page-link {
+  color: var(--text)
+}
+
+/*.highlighter-rouge .highlight {
+  background: var(--mantle);
+}*/
+
+/*
+* ToC look
+*/
+.toc {
+  background-color: var(--crust);
+  margin: 15px 0;
+  padding: 1rem 2rem;
+  border: 1px solid var(--surface2);
+  border-radius: 1px;
+  width: 33%;
+  word-wrap: break-word;
+}
+.toc:before {
+  content: "Contents";
+  color: var(--subtext0);
+  font-size: 1.5rem;
+  margin: -1rem;
+}
+.toc-sub {
+  list-style-type: disc;
+}
