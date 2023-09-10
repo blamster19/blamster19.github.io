@@ -244,7 +244,7 @@ table th { background-color: var(--surface1); }
 
 table td { border: var(--overlay0); }
 
-.site-title, .site-title:visited { color: var(--pink); }
+.site-title, .site-title:visited { color: var(--pink); margin-right: 40px; /* for collision with hamburger menu */ }
 
 .site-nav .page-link { color: var(--text); }
 
@@ -258,3 +258,9 @@ table td { border: var(--overlay0); }
 .toc:before { content: "Contents"; color: var(--subtext0); font-size: 1.5rem; margin: -1rem; }
 
 .toc-sub { list-style-type: disc; }
+
+/* burger */
+.site-nav .menu-icon > svg { fill: var(--surface2); }
+
+@media screen and (max-width: 600px) { .site-nav { color: var(--text); background-color: var(--slate); border: var(--slate); border-radius: 1px; text-align: left; }
+  .site-nav .page-link { margin-left: 5px; margin-right: 20px; } }
