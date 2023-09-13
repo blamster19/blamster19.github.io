@@ -234,6 +234,8 @@ blockquote { color: var(--subtext0); border-left: 4px solid var(--surface0); }
 
 pre, code { border: 1px solid var(--overlay1); border-radius: 1px; background-color: var(--mantle); }
 
+.highlighter-rouge .highlight { background: var(--mantle); }
+
 .svg-icon { fill: var(--blam); }
 
 table { color: var(--subtext1); border: var(--overlay1); }

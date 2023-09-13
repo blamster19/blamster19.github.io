@@ -102,6 +102,9 @@ code {
   border-radius: 1px;
   background-color: var(--mantle);
 }
+.highlighter-rouge .highlight {
+	background: var(--mantle);
+}
 
 .svg-icon {
   fill: var(--blam);
