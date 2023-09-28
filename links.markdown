@@ -34,3 +34,4 @@ Note that I have not read all of that myself yet; this list doubles as a reminde
 [Orion's Arm](https://orionsarm.com/)  
 [excellent infographic on signals in OpenTTD](https://imgur.com/a/aUoXC)  
 [Anders Sandberg's pages](https://aleph.se/) - check out this guy, really  
+[Atomic Rockets](https://projectrho.com/public_html/rocket/index.php)  
