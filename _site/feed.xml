@@ -1,4 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="https://blamster19.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blamster19.github.io/" rel="alternate" type="text/html" /><updated>2023-09-28T12:46:29+00:00</updated><id>https://blamster19.github.io/feed.xml</id><title type="html">blamster19 - all stuff blamster</title><subtitle>blamster19&apos;s little corner of the Net.</subtitle><entry><title type="html">DIY Raspberry Pi ebook reader, part 3 - epaper display</title><link href="https://blamster19.github.io/2023/09/27/rpi-ebook-3.html" rel="alternate" type="text/html" title="DIY Raspberry Pi ebook reader, part 3 - epaper display" /><published>2023-09-27T20:12:40+00:00</published><updated>2023-09-27T20:15:03+00:00</updated><id>https://blamster19.github.io/2023/09/27/rpi-ebook-3</id><content type="html" xml:base="https://blamster19.github.io/2023/09/27/rpi-ebook-3.html">&lt;h1 id=&quot;not-your-usual-screen&quot;&gt;Not your usual screen&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="https://blamster19.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blamster19.github.io/" rel="alternate" type="text/html" /><updated>2023-11-03T20:23:42+00:00</updated><id>https://blamster19.github.io/feed.xml</id><title type="html">blamster19 - all stuff blamster</title><subtitle>blamster19&apos;s little corner of the Net.</subtitle><entry><title type="html">Semiconductors - general info</title><link href="https://blamster19.github.io/cheatsheet/2023/11/03/semiconductors.html" rel="alternate" type="text/html" title="Semiconductors - general info" /><published>2023-11-03T20:16:00+00:00</published><updated>2023-11-03T20:16:00+00:00</updated><id>https://blamster19.github.io/cheatsheet/2023/11/03/semiconductors</id><content type="html" xml:base="https://blamster19.github.io/cheatsheet/2023/11/03/semiconductors.html">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Semiconductor is a material with variable electrical conductivity.&lt;/p&gt;
+
+&lt;h2 id=&quot;energy-bands&quot;&gt;Energy bands&lt;/h2&gt;
+
+&lt;p&gt;Atoms have &lt;em&gt;energy bands&lt;/em&gt; in which electrons can exist. There are:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;valence band&lt;/strong&gt; - highest energy band of electrons &lt;em&gt;bound&lt;/em&gt; to crystal lattice&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;conduction band&lt;/strong&gt; - electrons are shared by the whole crystal and can move &lt;em&gt;freely&lt;/em&gt; under the influence of electric field as a &lt;em&gt;carrier&lt;/em&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The bands are separated by a &lt;em&gt;band gap&lt;/em&gt; \(\Delta E\). &lt;strong&gt;In semiconductors the band gap is &amp;lt;~3 eV or &amp;lt;~5 eV&lt;/strong&gt; depending on source.&lt;/p&gt;
+
+&lt;h2 id=&quot;conductance-mechanism-of-intrinsic-semiconductor&quot;&gt;Conductance mechanism of intrinsic semiconductor&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Electron absorbs energy &amp;gt;\(\Delta E\) and jumps to conduction band&lt;/li&gt;
+  &lt;li&gt;It leaves a &lt;em&gt;hole&lt;/em&gt; in valence band&lt;/li&gt;
+  &lt;li&gt;Free electrons and holes can carry a &lt;em&gt;current&lt;/em&gt; before they recombine&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Concentration of carriers is proportional to temperature.&lt;/p&gt;
+
+&lt;h2 id=&quot;doping&quot;&gt;Doping&lt;/h2&gt;
+
+&lt;p&gt;Introduction of carefully chosen impurities allows for modulation of semiconductor’s properties.&lt;/p&gt;
+
+&lt;p&gt;Take a tetravalent semiconductor.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;adding a &lt;strong&gt;pentavalent&lt;/strong&gt; element (donor) makes one electron loosely bound to the lattice -&amp;gt; N type&lt;/li&gt;
+  &lt;li&gt;adding a &lt;strong&gt;trivalent&lt;/strong&gt; element (acceptor) makes one hole loosely bound to the lattice -&amp;gt; P type&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;p-n-junction&quot;&gt;&lt;em&gt;p-n&lt;/em&gt; junction&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;p-n&lt;/em&gt; junction is a &lt;strong&gt;boundary&lt;/strong&gt; between touching &lt;em&gt;n&lt;/em&gt; and &lt;em&gt;p&lt;/em&gt; semiconductors. On that boundary, carriers diffuse and create &lt;strong&gt;potential barrier&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;polarization&quot;&gt;Polarization&lt;/h3&gt;
+
+&lt;h4 id=&quot;reverse-bias&quot;&gt;Reverse bias&lt;/h4&gt;
+
+&lt;p&gt;Connecting &lt;em&gt;p&lt;/em&gt; semiconductor to minus and &lt;em&gt;n&lt;/em&gt; semiconductor to plus makes electrons from &lt;em&gt;n&lt;/em&gt; go towards the plus and holes from &lt;em&gt;p&lt;/em&gt; towards the minus &lt;strong&gt;widening the depletion region&lt;/strong&gt; and &lt;strong&gt;raising the potential barrier&lt;/strong&gt;. &lt;strong&gt;Current doesn’t flow&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;forward-bias&quot;&gt;Forward bias&lt;/h4&gt;
+
+&lt;p&gt;Connecting the &lt;em&gt;p&lt;/em&gt; semiconductor to plus and &lt;em&gt;n&lt;/em&gt; semiconductor to minus &lt;strong&gt;narrows the depletion region&lt;/strong&gt; and &lt;strong&gt;lowers the potential barrier&lt;/strong&gt; allowing for the &lt;strong&gt;flow of current&lt;/strong&gt;.&lt;/p&gt;</content><author><name></name></author><category term="cheatsheet" /><category term="semiconductors" /><summary type="html"></summary></entry><entry><title type="html">DIY Raspberry Pi ebook reader, part 3 - epaper display</title><link href="https://blamster19.github.io/2023/09/27/rpi-ebook-3.html" rel="alternate" type="text/html" title="DIY Raspberry Pi ebook reader, part 3 - epaper display" /><published>2023-09-27T20:12:40+00:00</published><updated>2023-09-27T20:15:03+00:00</updated><id>https://blamster19.github.io/2023/09/27/rpi-ebook-3</id><content type="html" xml:base="https://blamster19.github.io/2023/09/27/rpi-ebook-3.html">&lt;h1 id=&quot;not-your-usual-screen&quot;&gt;Not your usual screen&lt;/h1&gt;
 
 &lt;p&gt;I have to point out that epaper display does not work like normal LCD or OLED display you normally connect to Raspberry Pi. Instead of video driver, it comes with a library full of drawing routines you execute manually, like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;clear&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;draw&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;update&lt;/code&gt; and the like.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; This is not the end of differences, though. You have to be more mindful of refresh rate as those heavily impact longevity of a display. Typically you do not want to refresh more often than something like twice a minute, and certainly not every second (Waveshare &lt;a href=&quot;https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_Manual&quot;&gt;recommends&lt;/a&gt; 180 s). Another important thing to keep in mind is the full refresh cycle which consists of repeated flashes of black and white - it is required to fully clear the image and prevent ghosting, and is tied to how epaper displays work.&lt;/p&gt;
 

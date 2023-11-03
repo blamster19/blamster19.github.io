@@ -13,6 +13,7 @@ layout: default
     <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
     <ul class="post-list">
       {%- for post in site.posts -%}
+	  {% if post.hidden == null or post.hidden == false %}
       <li>
         {%- assign date_format = site.minima.date_format | default: "%Y-%m-%dT%H:%MZ" -%}
         <span class="post-meta">{{ post.date | date: date_format }}</span>
@@ -23,6 +24,7 @@ layout: default
         </h3>
         {{ post.excerpt }}
       </li>
+      {%- endif -%}
       {%- endfor -%}
     </ul>
 
