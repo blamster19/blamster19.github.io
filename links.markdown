@@ -23,6 +23,7 @@ Note that I have not read all of that myself yet; this list doubles as a reminde
 [Beginning Mathematical Logic: A Study Guide](https://www.logicmatters.net/tyl/)  
 [Lagrangian Mechanics For Dummies: An Intuitive Introduction](https://profoundphysics.com/lagrangian-mechanics-for-beginners/)  
 [Introduction to Modern Geometry - Axiomatic Method Class Notes](https://faculty.etsu.edu/gardnerr/Geometry/Geometry-notes-Wylie.htm#chapter1)  
+[The Mathematics of Quantum Mechanics](https://uwaterloo.ca/institute-for-quantum-computing/sites/default/files/uploads/files/mathematics_qm_v23_qsys.pdf)
 
 # Programming
 
