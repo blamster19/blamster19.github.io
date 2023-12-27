@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Adding new drive to LUKS encrypted setup | blamster19 - all stuff blamster</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Adding new drive to LUKS encrypted setup" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A not-so-obvious task of extending available space." />
+<meta property="og:description" content="A not-so-obvious task of extending available space." />
+<link rel="canonical" href="https://blamster19.github.io/2023/12/27/adding-luks-drive.html" />
+<meta property="og:url" content="https://blamster19.github.io/2023/12/27/adding-luks-drive.html" />
+<meta property="og:site_name" content="blamster19 - all stuff blamster" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-12-27T21:59:30+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Adding new drive to LUKS encrypted setup" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-12-27T23:05:30+00:00","datePublished":"2023-12-27T21:59:30+00:00","description":"A not-so-obvious task of extending available space.","headline":"Adding new drive to LUKS encrypted setup","mainEntityOfPage":{"@type":"WebPage","@id":"https://blamster19.github.io/2023/12/27/adding-luks-drive.html"},"url":"https://blamster19.github.io/2023/12/27/adding-luks-drive.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://blamster19.github.io/feed.xml" title="blamster19 - all stuff blamster" /><link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+<link rel="manifest" href="/assets/favicon/site.webmanifest">
+<link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/favicon/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body><header class="site-header" role="banner">
+
+<div class="wrapper"><a class="site-title" rel="author" href="/">blamster19 - all stuff blamster</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/links/">Links</a><a class="page-link" href="/cheatsheets/">Cheatsheets</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Adding new drive to LUKS encrypted setup</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2023-12-27T21:59:30+00:00" itemprop="datePublished">Published: 2023-12-27T21:59Z<br>
+		Last modified: 2023-12-27T23:05Z
+      </time></p>
+  </header>
+  <ol id="toc" class="toc">
+</ol>
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>After two years of flawless usage of my ThinkPad E15 gen-2 I ran out of space on its default 256 GB SSD drive. For christmas I bought myself a new shiny <a href="https://www.kingston.com/en/ssd/kc3000-nvme-m2-solid-state-drive">1 TB M.2 SSD</a> and appended it to my LVM setup. The setup was:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>lsblk
+NAME                     MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
+nvme1n1                  259:0    0 953,9G  0 disk
+nvme0n1                  259:1    0 238,5G  0 disk
+├─nvme0n1p1              259:2    0   476M  0 part  /boot/efi
+├─nvme0n1p2              259:3    0   954M  0 part  /boot
+└─nvme0n1p3              259:4    0 237,1G  0 part
+  └─nvme0n1p3_crypt      254:0    0 237,1G  0 crypt
+    ├─vg--1ThinkPad-swap 254:1    0  27,9G  0 lvm   <span class="o">[</span>SWAP]
+    ├─vg--1ThinkPad-root 254:2    0  37,3G  0 lvm   /
+    ├─vg--1ThinkPad-var  254:3    0    14G  0 lvm   /var
+    ├─vg--1ThinkPad-tmp  254:4    0   1,9G  0 lvm   /tmp
+    └─vg--1ThinkPad-home 254:5    0   156G  0 lvm   /home
+</code></pre></div></div>
+
+<p>I followed <a href="https://unix.stackexchange.com/questions/618877/how-can-i-add-a-new-physical-volume-to-extend-an-existing-luks-encrypted-lvm-vo">this answer on Stack Exchange</a> tailoring it to my needs. After booting up with SSD in place I opened <em>GNOME Disks</em> utility and checked the name and path to my new asset, in my case, <code class="language-plaintext highlighter-rouge">/dev/nvme1n1</code> (visible in window titlebar upon selecting the drive). I also ran benchmark to find that the average read rate is 1,8 GB/s and write rate 1,0 GB/s. I also wanted to be able to unlock both drives at once, which I managed to do by using <a href="https://unix.stackexchange.com/questions/392284/using-a-single-passphrase-to-unlock-multiple-encrypted-disks-at-boot">this</a> tip.</p>
+
+<p>I proceeded to execute the following commands based on Stack Exchange:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>cryptsetup luksFormat /dev/nvme1
+<span class="nv">$ </span><span class="nb">sudo </span>cryptsetup luksOpen /dev/nvme1
+<span class="nv">$ </span><span class="nb">sudo</span> <span class="nt">-e</span> /etc/crypttab
+</code></pre></div></div>
+<p>in it, I had one line about my old drive. I copied it and changed the name and UUID to match the new drive data like so:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nvme0n1p3_crypt UUID=85c7f21e-b237-4ba6-84c3-11e737968a67 none luks,initramfs,keyscript=decrypt_keyctl
+nvme1n1_crypt UUID=81e37db2-a64e-47d6-ace0-b037416712c6 none luks,initramfs,keyscript=decrypt_keyctl
+</code></pre></div></div>
+<p>I took the UUID from the output of <code class="language-plaintext highlighter-rouge">$ sudo blkid</code>. The <code class="language-plaintext highlighter-rouge">initramfs</code> flag is very important; without it my new partition did not mount and the OS dropped to <em>initramfs</em> on every boot. I had to manually <code class="language-plaintext highlighter-rouge">cryptsetup luksOpen</code> it and exit to load into GUI. Solution was inspired by <a href="https://unix.stackexchange.com/questions/643344/linux-mint-20-with-luks-and-lvm-hangs-on-boot-after-upgrade">this problem</a>. Then I did:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>update-initramfs <span class="nt">-c</span> <span class="nt">-k</span> all
+<span class="nv">$ </span><span class="nb">sudo </span>cryptsetup luksOpen /dev/nvme1n1 nvme1n1_crypt
+</code></pre></div></div>
+<p>and entered the new passphrase. Moving on:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>pvcreate /dev/mapper/nvme1n1_crypt
+<span class="nv">$ </span><span class="nb">sudo </span>vgs
+</code></pre></div></div>
+<p>This showed me that my volume group is <code class="language-plaintext highlighter-rouge">vg-1ThinkPad</code>. Next I executed:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>vgextend vg-1ThinkPad /dev/mapper/nvme1n1_crypt
+</code></pre></div></div>
+<p>I wanted to create aditional partition for data with very original name <code class="language-plaintext highlighter-rouge">data</code> (I will leave moving <code class="language-plaintext highlighter-rouge">/home</code> fot another time), so I created and formatted it to ext4:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>lvcreate <span class="nt">-l</span> 100%FREE <span class="nt">-n</span> data vg-1ThinkPad /dev/mapper/nvme1n1_crypt
+<span class="nv">$ </span><span class="nb">sudo </span>mkfs.ext4 /dev/vg-1ThinkPad/data
+</code></pre></div></div>
+<p>Finally I chose a mount point:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo mkdir</span> /mnt/data
+<span class="nv">$ </span><span class="nb">sudo </span>mount /dev/vg-1ThinkPad/data /mnt/data/
+</code></pre></div></div>
+<p>and added appropriate line to <code class="language-plaintext highlighter-rouge">/etc/fstab</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dev/mapper/vg--1ThinkPad-data /mnt/data            ext4    defaults   0    2
+</code></pre></div></div>
+<p>I installed <code class="language-plaintext highlighter-rouge">keyutils</code> from <em>apt</em> and updated <code class="language-plaintext highlighter-rouge">initramfs</code> again just in case and also run <code class="language-plaintext highlighter-rouge">update-grub</code>. And voilà. You have a fresh partition ready to be clogged with data.</p>
+
+
+  </div><a class="u-url" href="/2023/12/27/adding-luks-drive.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">blamster19 - all stuff blamster</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">
+	        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a><br />All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.
+            </li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/blamster19"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">blamster19</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>blamster19&#39;s little corner of the Net.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
