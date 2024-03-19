@@ -5,6 +5,7 @@ date: 2023-11-03 21:16:00 +0100
 categories: cheatsheet
 tags: semiconductors
 hidden: true
+sitemap: false
 ---
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 
