@@ -26,10 +26,10 @@ I wanted to start a blog for a long time, but I couldn't think of something wort
 
 # What are you doing now?
 
-I'm working on my bachelor's, but in the meantime I plan on writing something here if I manage to.
+I'm working on my master's, but in the meantime I plan on writing something here if I manage to.
 
 # What is your rig?
 
 * hardware: ThinkPad E15 Gen 2 AMD  
 * specs: AMD Ryzen 5 4500U, ~23 GiB RAM  
-* software: Debian GNU/Linux 12 (bookworm) x86_64; GNOME Wayland  
+* software: Debian GNU/Linux 13 (trixie) x86_64; GNOME Wayland  
