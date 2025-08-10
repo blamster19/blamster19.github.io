@@ -1,2 +1,4 @@
 _drafts/
 *.swp
+Gemfile.lock
+_site/
