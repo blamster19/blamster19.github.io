@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/scripts/temml/Temml-Local.css">
+  <script src="/assets/scripts/temml/temml.min.js" type="text/javascript"></script>
+  <script src="/assets/scripts/website-math.js" type="text/javascript"></script>
+  <noscript><strong>JavaScript on this site is used to render LaTeX math, but is non-essential.</strong></noscript>
+	<title>blamster19 - all stuff blamster</title>
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png">
+</head>
+<body>
+	<header>
+	<a href="/index.html">
+	blamster19 - all stuff blamster
+	</a>
+	<nav>
+	<a href="/about.html">About</a>
+	<a href="/links.html">Links</a>
+	</nav>
+	</header>
+	<main>
+<h1> DIY Raspberry Pi ebook reader, part 2 - setting things up</h1>
+Published: 2023-09-13T20:38:05Z <br />
+Last modified: 2023-09-13T20:38:18Z <br />
+<h3>Contents</h3>
+<ol>
+<li><a href="#body-and-mind">Body and mind</a>
+<li><a href="#prepping-raspberry-pi">Prepping Raspberry Pi</a>
+<li><a href="#environment">Environment</a>
+<li><a href="#testing-hardware">Testing hardware</a>
+<li><a href="#rust-for-raspberry-pi">Rust for Raspberry Pi</a>
+<li><a href="#conclusion">Conclusion</a>
+</ol>
+<h2 id="body-and-mind">Body and mind</h2>
+<p>Since I have now acquired all the hardware I wanted, I can learn to use it and make something great. Before I delve into designing interface, I must first install required software and check the physical layer for any issues.</p>
+<h2 id="prepping-raspberry-pi">Prepping Raspberry Pi</h2>
+<p><a href="https://www.raspberrypi.com/products/raspberry-pi-zero-w/">Raspberry Pi Zero W</a> is an SBC which supports full operating systems, in contrast to other popular hobbyist platform Arduino. The usual way of doing things is to install <a href="https://www.raspberrypi.com/software/">Raspberry Pi OS</a> (formerly Raspbian; I liked that name better, shame they changed that), an official dedicated Debian GNU/Linux based distro with a wealth of programs available in its repository. This is an excellent choice for people who do not wish to spend hours fiddling with stuff and who do not care about conserving resources to the extreme while sacrificing their sanity. Obviously this is not me, so I started looking for other things to put in my Pi.<br />
+The first thing to come to my mind was BSD. This family of OSes is not exactly known to be the first choice for Raspberry Pi, and I have never actually encountered a project using one. I have never used BSD before, so I was thrilled by the prospect of learning alien system in, I believe, quite niche setup. But then I began to worry about driver support - I have custom hardware to connect, and vendor libraries are mostly written with Linux in mind. The last straw was a table in <a href="https://wiki.freebsd.org/arm/Raspberry%20Pi">wiki</a> which claims that the WiFi in Zero W is unsupported.<br />
+Going back to the Linux world, I still did not give up on using something different than <del>Raspbian</del> Raspberry Pi OS. Looking for other options I stumbled across <a href="https://archlinuxarm.org/">Arch Linux ARM</a>. I have never really used Arch before, so the feeling was similar as before. However, doubts started to arise - am I ready to take up all those hardships of learning different distro, hardware control and electronics all at once? Debian-based distros are familiar to me, so at least if matters go haywire I am not stuck fighting with a system, especially package manager.<br />
+Defeated, I started seeking <del>Raspbian</del> Raspberry Pi OS derivatives that are not Raspberry Pi OS. From my earlier days of Raspberry Pi experiments I remembered <a href="https://dietpi.com/">DietPi</a>, a lightweight spin on <del>Rasp</del> Raspberry Pi OS with an optimized set of programs. I decided to give it a go, because it scratches that minimalist itch of mine.<br />
+The whole process of configuration is unremarkable. I flashed the SD card and edited the <code>diepi.txt</code> and <code>dietpi-wifi.txt</code> files to connect the Pi to the Internet on first boot, just as <a href="https://dietpi.com/docs/install/">instruction</a> told me to. I then put the card in and proceeded to sweep the network in search of the device, so that I can connect through SSH and perform headless install. This process took longer than anticipated, because In my impatience I aborted the process several times thinking I missed something in the config. When I finally found the address, I connected and changed the passwords and such.</p>
+<h2 id="environment">Environment</h2>
+<p>Now that I had a working platform, I could start thinking about the software stuff.<br />
+In terms of my language of choice, I picked Rust - my new favorite toy in programming. Rust is well suited for embedded programming, and work with its package manager Cargo is a breeze.<br />
+In terms of gathering drivers and libraries, I began with epaper display. According to the <a href="https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_Manual#Working_With_Raspberry_Pi">wiki</a> I had to enable SPI interface, which is hidden in <code>Advanced Options</code> of <code>dietpi-config</code>. Then I installed <a href="https://www.airspayce.com/mikem/bcm2835/">bcm2835 library</a> used by Waveshare&#x27;s <a href="https://github.com/waveshareteam/e-Paper">demo code</a>, which I might later cannibalize for screen control.<br />
+Button SHIM comes with a Python library. I refuse to use Python outside scientific work, and especially in low-level applications, so I started looking for Rust alternatives. I found something <a href="https://github.com/mzyy94/buttonshim">just for this purpose</a> and thus looked no further.<br />
+To use the UPS HAT I just had to enable I<sup>2</sup>C interface.</p>
+<h2 id="testing-hardware">Testing hardware</h2>
+<h3>Display</h3>
+<p>The first component I wanted to test was the epaper display. Thera are two ways of connecting it to the main board: the first and arguably the easiest is to put a HAT on Raspberry Pi, the more challenging way is to use the 8PIN cable that comes with the screen and manually plug in the cables onto header. For the purpose of checking if things are working all right I went the HAT way, because I do not want to risk frying the screen just yet. I connected the flat cables between boards and display and was ready to go.<br />
+The demo code I downloaded from Waveshare&#x27;s site is a bit messy, but as they stated somewhere in the files, that is because the library is written for all models they sell and writing redundant code would be pointless. Instead, provided Makefile composes the right demo for chosen display model during compilation. Per included readme, I executed:</p>
+<pre><code># make EPD=epd7in5V2
+</code></pre>
+<p>Make created <code>epd</code> executable in the working directory. When I ran it (with root), the display started flashing black and white and spat out different test pictures. I was quite impressed and satisfied with what I saw.
+<img src="/assets/images/postimages/rpiebook/workingepaper.jpg" alt="working epaper display" />
+Epaper display - check!</p>
+<h3>UPS</h3>
+<p>Raising difficulty bar by one level, I proceeded to test the power supply. I want to power my Pi with Akyga LiPol I purchased, which comes bundled with JST-BEC female connector with dangling cables for self-assembly. The board has no JST-BEC socket, but has two soldering pads for custom wiring. I proceeded to solder connector to the board. Whew! I get anxious when I solder so close to the delicate electronics, let alone power supply. Solders passed the test of strength, which made me glad.
+<img src="/assets/images/postimages/rpiebook/upssolders.jpg" alt="beautiful job" />
+Look at these huge pins! Anyway, I put the HAT on Raspberry Pi and connected the battery. I clicked the button, the battery indicator on HAT flashed bright white and... nothing. I held the button a little longer, the battery indicator flashed bright white and... there it is! The Raspberry Pi green diode switched on. I successfully logged into Pi through SSH.
+<img src="/assets/images/postimages/rpiebook/upsworking.jpg" alt="IT&#x27;S WORKING!~Anakin Skywalker" />
+As I skimmed through the Net I read somewhere that the HAT allows for gentle shutdown when the battery is almost depleted, which is really nice.<br />
+UPS HAT - check! Moving on.</p>
+<h3>Buttons</h3>
+<p>The trickiest part to test was the button SHIM, because the only way to connect it is to solder it. As I stated in the previous post, I want it connected to the underside of Raspberry Pi. I do not know whether it is going to bite me in the bottom later, but now it seems to be a great idea. <a href="https://pinout.xyz/pinout/button_shim">pinout.xyz</a> said I needed to solder pins 3, 4, 5, 6, 17. After I soldered everything I was mortified - I had it upside down! Thankfully I did not have to unsolder, just make more solders and this time in correct places.
+<img src="/assets/images/postimages/rpiebook/buttonssolders.jpg" alt="had a little accident" />
+I know, they are not pretty, but I moved forward. As you can see, I tried to unsolder the wrong ones, but at the end of the day it does not matter. To test the buttons I had to set up Rust on my main machine to cross-compile to Raspberry Pi.</p>
+<h2 id="rust-for-raspberry-pi">Rust for Raspberry Pi</h2>
+<p>Setting up Rust and compiling on Pi would take too long to be worth it. To cross-compile from x86_64 machine to Raspberry Pi Zero W, first I had to add a new target:</p>
+<pre><code>$ rustup add target arm-unknown-linux-gnueabihf
+</code></pre>
+<p>I had no luck with a toolchain provided by my distro&#x27;s repository, so I had to grab one from <a href="https://github.com/raspberrypi/tools">here</a> and put it in my project directory under <code>rpi_tools</code>. Then I created file <code>.cargo/config</code> with the following contents:</p>
+<pre><code>[build]
+[target.arm-unknown-linux-gnueabihf]
+linker = &quot;rpi_tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc&quot;
+</code></pre>
+<p>In this file I specified the custom linker I just downloaded. Rust is now ready to compile for Pi.</p>
+<p>To get a quick glance over the operation of SHIM I used the <code>rainbow.rs</code> example included with mzyy94&#x27;s <a href="https://github.com/mzyy94/buttonshim">library</a>. I compiled the file issuing:</p>
+<pre><code>$ cargo build --release --target=arm-unknown-linux-gnueabihf
+</code></pre>
+<p>and <code>scp</code>&#x27;d it to my Pi. The LED of Button SHIM changes color with button presses as intended.
+<img src="/assets/images/postimages/rpiebook/buttonsworking.jpg" alt="colored lights" />
+Buttons - check!</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I managed to successfully test all hardware without problems. With Rust set up to producing ARM binaries I am ready to write software for this device.<br />
+In the next step I will be trying to make the display show whatever I order it to. I will also decide how I want to interact with the finished contraption, i.e. whether I should write a whole custom program a&#x27;la Kodi and encapsulate all functionality within it, or to make it more like a Linux box with access to the underlying OS.</p>
+</main>
+<footer>
+	<hr>
+	blamster19's little corner of the Net.<br>
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+	<img alt="Creative Commons License" src="/assets/images/ccbysa80x15.png" />
+	</a>
+	<br/>
+	All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.<br>
+	<a href="/feed.xml">Atom feed</a>
+	<a href="https://codeberg.org/blamster19">Codeberg</a>
+
+</footer>
+</body>
+</html>

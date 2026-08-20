@@ -7,8 +7,6 @@ tags: crafts electronics
 excerpt: What is the best assignment project that is easy to do and useful? DIY smartwatch!
 ---
 
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-
 # Motivation
 
 The pinnacle of microcontroller lab I attended this semester is my own project based on any microcontroller I could get my hands on. I thought hard about things that are cool but also useful, things which will not end up at the bottom of my drawer. Recently gathering data has been my jam, and this has led me to the idea of a smartwatch. I figured a gizmo measuring my heartbeat and saturation is a good starter and the rest will come later.
@@ -57,7 +55,7 @@ LCD.show()
 
 To me that short time necessary to get something to work was astonishing. Here I was holding a working watch done in five minutes. Happy with the result I eagerly started to give my code some structure. In the following steps I added panels which you can swipe up and down along with arrows showing whether there are more panels to swipe to. I tried to incorporate LVGL Python bindings to make nicer visuals, but my efforts went in vain, so I prioritized quick progress over doing things elegantly.
 
-The biggest challenge was to utilize the pulse oximeter. There is a library called [MAX30102-MicroPython-driver](https://github.com/n-elia/MAX30102-MicroPython-driver), but it has no ready example of $$SpO_2$$ measurement. I searched for some other solutions like MAX30105 drivers and even thought about running C pulse oximeter code on one core and MicroPython interface on the other, but in the end I settled for MAX30102-MicroPython-driver with modified example code. The modified parts were pin definitions, red LED measurement logging and some sampling rate values. I also added saturation measurement as follows:
+The biggest challenge was to utilize the pulse oximeter. There is a library called [MAX30102-MicroPython-driver](https://github.com/n-elia/MAX30102-MicroPython-driver), but it has no ready example of $SpO_2$ measurement. I searched for some other solutions like MAX30105 drivers and even thought about running C pulse oximeter code on one core and MicroPython interface on the other, but in the end I settled for MAX30102-MicroPython-driver with modified example code. The modified parts were pin definitions, red LED measurement logging and some sampling rate values. I also added saturation measurement as follows:
 
 ```python
 R = sum(red_peaks[:][0]) / sum(ir_peaks[:][0]) * len(ir_peaks[:][0]) / len(red_peaks[:][0])
@@ -80,7 +78,6 @@ I settled for 3D printed model of my making. It is made of PLA with 0,4 mm nozzl
 
 ![Case 3D model](/assets/images/postimages/diysmartwatch/3dmodel.png){: width="500" .center-image}
 
-
 ![Printed](/assets/images/postimages/diysmartwatch/printed.jpg){: width="500" .center-image}
 
 At the time of writing the case is too short to fit all cables; this will be repaired as last-minute effort before deadline, the student way.
@@ -90,7 +87,7 @@ At the time of writing the case is too short to fit all cables; this will be rep
 The case needs some polishing when it comes to housing all the stuff, but overall effect is quite satisfactory for a project done in about one week. Sometimes the MicroPython code crashes, probably something related to pulse oximeter thread, but I had no time to repair it yet. For me this is, first and foremost, a platform to test new ideas and as such it suits its purpose well.
 
 ![Date and time](/assets/images/postimages/diysmartwatch/datetime.jpg){: width="500" .center-image}
-![BPM and $$SpO_2$$](/assets/images/postimages/diysmartwatch/bpm.jpg){: width="500" .center-image}
+![BPM and $SpO_2$](/assets/images/postimages/diysmartwatch/bpm.jpg){: width="500" .center-image}
 ![Level bubble](/assets/images/postimages/diysmartwatch/level.jpg){: width="500" .center-image}
 
 Things to do later: install straps, print more precisely, fix buggy code, add more software features, add a way to turn this thing off (shhh!).

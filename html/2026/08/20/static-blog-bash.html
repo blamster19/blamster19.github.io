@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/scripts/temml/Temml-Local.css">
+  <script src="/assets/scripts/temml/temml.min.js" type="text/javascript"></script>
+  <script src="/assets/scripts/website-math.js" type="text/javascript"></script>
+  <noscript><strong>JavaScript on this site is used to render LaTeX math, but is non-essential.</strong></noscript>
+	<title>blamster19 - all stuff blamster</title>
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png">
+</head>
+<body>
+	<header>
+	<a href="/index.html">
+	blamster19 - all stuff blamster
+	</a>
+	<nav>
+	<a href="/about.html">About</a>
+	<a href="/links.html">Links</a>
+	</nav>
+	</header>
+	<main>
+<h1> Static blog generation with Bash</h1>
+Published: 2026-08-20T12:30:00Z <br />
+Last modified: 2026-08-20T13:51:34Z <br />
+<h3>Contents</h3>
+<ol>
+<li><a href="#what-x27-s-wrong-with-normal-ssgs">What&#x27;s wrong with normal SSGs?</a>
+<li><a href="#blog-page-structure">Blog page structure</a>
+<li><a href="#outcome">Outcome</a>
+</ol>
+<h2 id="what-x27-s-wrong-with-normal-ssgs">What&#x27;s wrong with normal SSGs?</h2>
+<p>When I created this blog (2023) I used <a href="https://jekyllrb.com/">Jekyll Static Site Generator</a> (SSG) to produce HTML from Markdown files. You write the post in plain Markdown and the engine compiles it into a beautiful page with header and footer, pretty simple. I used GitHub Action to compile the site on every pushed commit.</p>
+<p>Over time I&#x27;ve noticed several things that annoyed me so bad that I started to seek an alternative:</p>
+<ul>
+<li>the site source was unintelligible to me - I like to know how stuff works and I love to learn by example, but the SSG output is very obtuse and optimized for SEO and whatnot, which makes for an awful learning experience</li>
+<li>I got interested in Small Web/<a href="https://indieweb.org/">IndieWeb</a>/<a href="https://smolweb.org/">smolweb</a> and my blog did not live up to that standard (more on that later)</li>
+<li>GitHub changed the tools often enough that publishing every new post meant tweaking the Action configuration and upgrading Jekyll; things often broke and I had to do a few tries to get my site up</li>
+<li>My site was not flexible enough for me; it might be due to my lack of knowledge about the tool I was using, but I didn&#x27;t want to spend time learning a tool that I would use a couple times a year if my knowledge would become obsolete after a few uses when new version changes everything</li>
+</ul>
+<p>Other than that, I had a few other goals I wanted to accomplish:</p>
+<ul>
+<li>learn Bash - although I daily drive GNU/Linux systems for more than 6 years I&#x27;ve never really had much use for classic tools like <code>sed</code>, <code>awk</code> or even <code>grep</code>; I wanted a fun challenge and rewriting my blog in Bash was an excellent choice</li>
+<li>I wanted a system that will last - *nix shell environment is so stable that my generator will work in 2, 5 or even 10 years (probably with minor tweaks)</li>
+<li>the source will be human-readable - manually crafted HTML and CSS is always nice to look at</li>
+<li>I wanted to reactivate my blog and be more active - hopefully I will have more time to do cool stuff and write about it</li>
+<li>I also have something big to write about, but I won&#x27;t spoil it now</li>
+<li>I will be migrating from GitHub and will probably buy a proper domain; I&#x27;ve been using Codeberg for my private repositories for a year now and I&#x27;m ready to jump the ship</li>
+</ul>
+<h2 id="blog-page-structure">Blog page structure</h2>
+<h3>Header and footer</h3>
+<p>The first stage of rewriting the static site generator is the creation of header and footer. The content, written in Markdown and converted to (X)HTML, sits between those. Building the page comes down to essentially one command:</p>
+<pre><code class="language-bash">cat header.html content.html footer.html
+</code></pre>
+<p>I wrote a new header and footer to match my old layout, wrote a CSS stylesheet to make my site pretty and then wrote the parsing part. When I was writing the HTML I tried to follow the rules laid out in the <a href="https://smolweb.org/guidelines.html">smolweb guidelines</a>. I don&#x27;t think I followed them very faithfully, but I hope I managed to produce something accessible that degrades gracefully. Browsing the page in <a href="https://lynx.invisible-island.net/">Lynx</a> works well enough.</p>
+<h3>Body</h3>
+<p>Processing the content was fun. I decided to use <a href="https://packages.debian.org/trixie/md2html"><code>md2html</code></a> utility available in Debian repos as a starting point. I could have written the parser myself in Bash, but I wanted to allocate finite time to the project and parsing Markdown was not a priority. Still, the output of that tool had to be sanitized.
+My posts were originally written for Jekyll, so they contain the Yaml front-matter with page data at the beginning of the file. I had to parse it separately from the proper body and extract the title, type and creation date.
+Figuring out how to make the converted output work in the context of the whole page was fun. This is the pipeline that I made:</p>
+<pre><code class="language-bash"># footnotes parsing
+  sed -E &#x27;
+ s/^\[\^([^][]+)\]:[[:space:]]*/&lt;br \/&gt;&lt;a id=&quot;fn\1&quot; href=&quot;#ref\1&quot;&gt;&lt;sup&gt;\1&lt;\/sup&gt;&lt;\/a&gt; /
+ s/\[\^([^][]+)\][[:space:]]*/&lt;a href=&quot;#fn\1&quot; id=&quot;ref\1&quot;&gt;&lt;sup&gt;\1&lt;\/sup&gt;&lt;\/a&gt; /g&#x27; | md2html --github -x |
+# lower the headings
+  sed \
+    -e &#x27;s@&lt;h5&gt;@&lt;h6&gt;@g; s@&lt;/h5&gt;@&lt;/h6&gt;@g&#x27; \
+    -e &#x27;s@&lt;h4&gt;@&lt;h5&gt;@g; s@&lt;/h4&gt;@&lt;/h5&gt;@g&#x27; \
+    -e &#x27;s@&lt;h3&gt;@&lt;h4&gt;@g; s@&lt;/h3&gt;@&lt;/h4&gt;@g&#x27; \
+    -e &#x27;s@&lt;h2&gt;@&lt;h3&gt;@g; s@&lt;/h2&gt;@&lt;/h3&gt;@g&#x27; |
+# lower h1 to h2 and add id for toc linking
+  perl -pe &#x27;s{&lt;h1&gt;(&lt;a href=&quot;#fn&lt;&quot; id=&quot;ref&lt;&quot;&gt;&lt;sup&gt;&lt;&lt;/sup&gt;&lt;/a&gt; +)&lt;/h1&gt;}{
+   $t = $1;
+   $id = lc($t);
+   $id =~ s/&lt;a href=&quot;#fna-z0-9&quot; id=&quot;refa-z0-9&quot;&gt;&lt;sup&gt;a-z0-9&lt;/sup&gt;&lt;/a&gt; +/-/g;
+   $id =~ s/^-+|-+$//g;
+   &quot;&lt;h2 id=\&quot;$id\&quot;&gt;$t&lt;/h2&gt;&quot;}ge&#x27; |
+# remove image CSS parameters from legacy posts
+  sed -E &#x27;s/(&lt;img&lt;a href=&quot;#fn&gt;&quot; id=&quot;ref&gt;&quot;&gt;&lt;sup&gt;&gt;&lt;/sup&gt;&lt;/a&gt; *&gt;)\s*\{:&lt;a href=&quot;#fn}&quot; id=&quot;ref}&quot;&gt;&lt;sup&gt;}&lt;/sup&gt;&lt;/a&gt; *\}/\1/g&#x27;
+</code></pre>
+<p>I generate the HTML ToC, the title and publishing and modification dates and combine all that to create the content body.</p>
+<p>If the layout of the page in the front-matter says <code>&quot;home&quot;</code>, then it is the index page that lists all the blog posts. To list all posts with their titles, dates and excerpts I do the following:</p>
+<pre><code class="language-bash">local files=($(grep -l &#x27;^date: &#x27; * | while read -r file; do
+  local date=$(grep &#x27;^date: &#x27; &quot;$file&quot; | cut -d&#x27; &#x27; -f2)
+  printf &quot;%s\n&quot; &quot;$file&quot;
+done | sort -n | cut -f2-))
+for ((i = ${#files[@]} - 1; i &gt;= 0; i--)); do
+  local post_file=&quot;${files[i]}&quot;
+  local date_md=$(grep &#x27;^date: &#x27; &quot;$post_file&quot; | cut -d&#x27; &#x27; -f2-)
+  local date_utc=$(date -u -d &quot;$date_md&quot; +&quot;%Y-%m-%dT%H:%M:%SZ&quot;)
+  local title=$(grep &#x27;^title: &#x27; &quot;$post_file&quot; | cut -d&#x27; &#x27; -f2-)
+  local excerpt=$(grep &#x27;^excerpt: &#x27; &quot;$post_file&quot; | cut -d&#x27; &#x27; -f2-)
+  local url=$(
+    printf &quot;%s&quot; &quot;$post_file&quot; |
+      sed &#x27;s/^\(.\{4\}\)./\1\//;
+   s/^\(.\{7\}\)./\1\//;
+   s/^\(.\{10\}\)./\1\//;
+   s/\.markdown/\.html/&#x27;
+  )
+  echo &quot;&lt;a href=&quot;$url&quot;&gt;&lt;h3&gt;$title&lt;/h3&gt;&lt;/a&gt;&quot;
+  echo &quot;&lt;small&gt;$date_utc&lt;/small&gt;&lt;br /&gt;&quot;
+  echo &quot;&lt;p&gt;$excerpt&lt;/p&gt;&quot;
+
+</code></pre>
+<p>This goes through all the posts in creation chronological order and writes the titles, UTC dates and excerpts.</p>
+<h3>Compilation</h3>
+<p>The script I wrote compiles a single site. My blog is of course composed of many files and not all of them need to be compiled every time I change something. The obvious choice of a tool to conditionally compile changed files was <code>make</code>. This was the most tedious and time-consuming part of my project because I cannot write Makefiles for the life of me. I managed to make something like this:</p>
+<pre><code class="language-bash">PAGES_SRC := pages-md
+POSTS_SRC := _posts
+HTML_OUT := html
+
+PAGES_MD := $(wildcard $(PAGES_SRC)/*.markdown)
+POSTS_MD := $(wildcard $(POSTS_SRC)/*.markdown)
+
+PAGES_HTML := $(patsubst $(PAGES_SRC)/%.markdown,$(HTML_OUT)/%.html,$(PAGES_MD))
+POSTS_HTML := $(foreach f,$(POSTS_MD),$(HTML_OUT)/$(shell echo $(notdir $(f)) | sed -E &#x27;s/^([0-9]{4})-([0-9]{2})-([0-9]{2})-(.*)\.markdown$$/\1\/\2\/\3\/\4.html/&#x27;))
+POSTS_HTML_DIRS := $(foreach f,$(POSTS_MD),$(HTML_OUT)/$(shell echo $(notdir $(f)) | sed -E &#x27;s/^([0-9]{4})-([0-9]{2})-([0-9]{2})-(.*)\.markdown$$/\1\/\2\/\3/&#x27;))
+
+define post_rule
+$(HTML_OUT)/$(shell echo $(notdir $(1)) | sed -E &#x27;s/^([0-9]{4})-([0-9]{2})-([0-9]{2})-(.*)\.markdown$$/\1\/\2\/\3\/\4.html/&#x27;): $(1) | $(HTML_OUT)/$(shell echo $(notdir $(1)) | sed -E &#x27;s/^([0-9]{4})-([0-9]{2})-([0-9]{2})-(.*)\.markdown$$/\1\/\2\/\3/&#x27;)
+ /bin/bash ./blampub.sh $$&lt; &gt; $$@
+endef
+
+all: $(PAGES_HTML) $(POSTS_HTML) $(HTML_OUT)/feed.xml
+
+$(HTML_OUT)/%.html: $(PAGES_SRC)/%.markdown
+ /bin/bash ./blampub.sh $&lt; &gt; $@
+
+$(foreach f,$(POSTS_MD),$(eval $(call post_rule,$(f))))
+
+$(POSTS_MD): | $(POSTS_HTML_DIRS)
+
+$(POSTS_HTML_DIRS):
+ mkdir -p $@
+
+$(HTML_OUT)/feed.xml:
+ /bin/bash ./feedgen.sh &gt; $@
+
+clean:
+ find $(HTML_OUT)/ -mindepth 1 -not -path &#x27;*/assets*&#x27; -delete
+</code></pre>
+<p>The main complication was the handling of post files names. Each markdown source file has a name like <code>yyyy-mm-dd-arbitrary-post-title.markdown</code>. The output page is stored in <code>yyyy/mm/dd/arbitrary-post-title.html</code>. I needed to extract the date from the filename, create the proper directory structure and preserve the rest of the filename. The fact that the name could contain hyphens complicated the matter, because I could not simply turn every <code>-</code> into <code>/</code> and have the path for free. This is why I need the lengthy <code>post_rule</code> that generates appropriate rule for every source file that exists in the <code>foreach</code> loop.</p>
+<h3>Feed</h3>
+<p>The Atom feed was trivial to implement. It is mostly <code>echo</code>ing the XML boilerplate and the parsed Markdown file. This time I do not lower the heading levels. I reused the code for parsing and listing posts in chronological order.</p>
+<h2 id="outcome">Outcome</h2>
+<p>The result I got is a nice, understandable static site generator that I hope will serve me well. I learned a bit of Bash in the process which is what I wanted. In the process of migrating to the new generator I had to upgrade some posts to remove MathJax script CDN linking. Now I use a minimal installation of <a href="https://temml.org/">Temml</a> that sits in the website assets and is loaded in the browser to turn every <code>$$text$$</code> into LaTeX math.</p>
+</main>
+<footer>
+	<hr>
+	blamster19's little corner of the Net.<br>
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+	<img alt="Creative Commons License" src="/assets/images/ccbysa80x15.png" />
+	</a>
+	<br/>
+	All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.<br>
+	<a href="/feed.xml">Atom feed</a>
+	<a href="https://codeberg.org/blamster19">Codeberg</a>
+
+</footer>
+</body>
+</html>

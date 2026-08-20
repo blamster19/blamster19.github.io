@@ -1,0 +1,9 @@
+---
+layout: page
+title: 404
+permalink: /404.html
+---
+
+# **Stop right there**
+
+There is no such place, you dummy

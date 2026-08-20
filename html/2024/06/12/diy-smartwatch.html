@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/scripts/temml/Temml-Local.css">
+  <script src="/assets/scripts/temml/temml.min.js" type="text/javascript"></script>
+  <script src="/assets/scripts/website-math.js" type="text/javascript"></script>
+  <noscript><strong>JavaScript on this site is used to render LaTeX math, but is non-essential.</strong></noscript>
+	<title>blamster19 - all stuff blamster</title>
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png">
+</head>
+<body>
+	<header>
+	<a href="/index.html">
+	blamster19 - all stuff blamster
+	</a>
+	<nav>
+	<a href="/about.html">About</a>
+	<a href="/links.html">Links</a>
+	</nav>
+	</header>
+	<main>
+<h1> DIY Smartwatch </h1>
+Published: 2024-06-12T21:39:00Z <br />
+Last modified: 2026-08-20T14:10:28Z <br />
+<h3>Contents</h3>
+<ol>
+<li><a href="#motivation">Motivation</a>
+<li><a href="#construction">Construction</a>
+<li><a href="#closing-remarks">Closing remarks</a>
+</ol>
+<h2 id="motivation">Motivation</h2>
+<p>The pinnacle of microcontroller lab I attended this semester is my own project based on any microcontroller I could get my hands on. I thought hard about things that are cool but also useful, things which will not end up at the bottom of my drawer. Recently gathering data has been my jam, and this has led me to the idea of a smartwatch. I figured a gizmo measuring my heartbeat and saturation is a good starter and the rest will come later.</p>
+<h2 id="construction">Construction</h2>
+<h3>Hardware</h3>
+<p>I set off in search of parts and quickly found what I needed. Waveshare provided me with more than what I wanted: <a href="https://www.waveshare.com/rp2040-touch-lcd-1.28.htm">Waveshare RP2040 Touch LCD 1.28&quot;</a>. This is a touch-enabled round display integrated with RP2040 microcontroller, accelerometer+gyroscope module, RTC and battery header. Almost fully-featured smartwatch in itself, and to be honest I feel quite dirty using it in my project, but due to time, money and volume constraints this is the best decision.</p>
+<p>Arguably, one might complain that the board has no connectivity, thus why the first draft included ESP32 which would talk to RP2040 through exposed GPIO ports. However, because of coming deadline and various difficulties with that soution, the idea was dropped (for now).</p>
+<p>From the beginning the most important part besides the chip and screen was pulse oximeter. I reviewed all available options which did not cost a small fortune and settled for <a href="https://www.analog.com/en/products/max30102.html">MAX30102</a> board from local eshop. This model does not contain green LED (like in MAX30105). Green light makes for better wrist measurements, but I could not find any such modules and just hoped for luck.</p>
+<p>At this point my sole concern has been battery dimensions. I found <a href="https://www.akyga.com/products/906-lithium-polymer-battery-3-7v-85mah-pcm-connector-socket-2-54-jst-2-pins-l-150mm.html">Li-Pol Akyga 85 mAh 1S 3,7 V</a> which might just barely fit in what I had in mind.</p>
+<h3>Code</h3>
+<p>I started by writing some basic program to show date and time. As time has been critical factor I decided to use MicroPython for the first time. Sites around the web adviced me to use Thonny IDE, so I complied. I plugged my RP2040 touch screen board with BOOT button pressed and in a matter of seconds I could flash MicroPython right away. Pretty simple.</p>
+<p>The first thing I did was copy the <a href="https://www.waveshare.com/wiki/RP2040-Touch-LCD-1.28#Demo">example code from Waveshare</a> and strip it off the demo functionality. This way I obtained a neat driver for my board which I placed in separate file. My next step was date and time - it turns out the whole deal is done in a few lines of MicroPython:</p>
+<pre><code class="language-python">from machine import RTC
+import time
+
+...
+
+rtc = RTC()
+
+def draw_ui(LCD):
+    t = time.localtime()
+    time_string = str(t[3])+&#x27;:&#x27;+&#x27;{:02d}&#x27;.format(t[4])+&#x27;:&#x27;+&#x27;{:02d}&#x27;.format(t[5])
+    LCD.fill(0)
+    LCD.write_text(time_string, 25, 105, 3, 65535)
+    date_string = str(t[0])+&#x27;-&#x27;+&#x27;{:02d}&#x27;.format(t[1])+&#x27;-&#x27;+&#x27;{:02d}&#x27;.format(t[2])
+    LCD.write_text(date_string, 40, 140, 2, 65535)
+    LCD.show()
+
+while True:
+    draw_ui(LCD)
+
+LCD.fill(0)
+LCD.show()
+</code></pre>
+<p>To me that short time necessary to get something to work was astonishing. Here I was holding a working watch done in five minutes. Happy with the result I eagerly started to give my code some structure. In the following steps I added panels which you can swipe up and down along with arrows showing whether there are more panels to swipe to. I tried to incorporate LVGL Python bindings to make nicer visuals, but my efforts went in vain, so I prioritized quick progress over doing things elegantly.</p>
+<p>The biggest challenge was to utilize the pulse oximeter. There is a library called <a href="https://github.com/n-elia/MAX30102-MicroPython-driver">MAX30102-MicroPython-driver</a>, but it has no ready example of $SpO_2$ measurement. I searched for some other solutions like MAX30105 drivers and even thought about running C pulse oximeter code on one core and MicroPython interface on the other, but in the end I settled for MAX30102-MicroPython-driver with modified example code. The modified parts were pin definitions, red LED measurement logging and some sampling rate values. I also added saturation measurement as follows:</p>
+<pre><code class="language-python">R = sum(red_peaks[:][0]) / sum(ir_peaks[:][0]) * len(ir_peaks[:][0]) / len(red_peaks[:][0])
+spo2 = 100 - 5 * R
+</code></pre>
+<p>Where <code>red_peaks</code> and <code>ir_peaks</code> are lists generated by peak finding function.</p>
+<p>The last functionality I added to my firmware was level bubble. It is just a circle placed at scaled X and Y output of onboard accelerometer.</p>
+<p>The whole code is available <a href="https://github.com/blamster19/diy-smartwatch">in my repository</a>.</p>
+<h3>Pinout</h3>
+<p>There is not much to say about pinout. I connected the MAX30102&#x27;s SDA to pin 26 and SCL to pin 27 of Waveshare board, although any GPIO pin pair would be ok after slight code change.</p>
+<h3>Case</h3>
+<p>I settled for 3D printed model of my making. It is made of PLA with 0,4 mm nozzle (available at my faculty). Fits very tightly.</p>
+<p><img src="/assets/images/postimages/diysmartwatch/3dmodel.png" alt="Case 3D model" /></p>
+<p><img src="/assets/images/postimages/diysmartwatch/printed.jpg" alt="Printed" /></p>
+<p>At the time of writing the case is too short to fit all cables; this will be repaired as last-minute effort before deadline, the student way.</p>
+<h2 id="closing-remarks">Closing remarks</h2>
+<p>The case needs some polishing when it comes to housing all the stuff, but overall effect is quite satisfactory for a project done in about one week. Sometimes the MicroPython code crashes, probably something related to pulse oximeter thread, but I had no time to repair it yet. For me this is, first and foremost, a platform to test new ideas and as such it suits its purpose well.</p>
+<p><img src="/assets/images/postimages/diysmartwatch/datetime.jpg" alt="Date and time" />
+<img src="/assets/images/postimages/diysmartwatch/bpm.jpg" alt="BPM and $SpO_2$" />
+<img src="/assets/images/postimages/diysmartwatch/level.jpg" alt="Level bubble" /></p>
+<p>Things to do later: install straps, print more precisely, fix buggy code, add more software features, add a way to turn this thing off (shhh!).</p>
+</main>
+<footer>
+	<hr>
+	blamster19's little corner of the Net.<br>
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+	<img alt="Creative Commons License" src="/assets/images/ccbysa80x15.png" />
+	</a>
+	<br/>
+	All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.<br>
+	<a href="/feed.xml">Atom feed</a>
+	<a href="https://codeberg.org/blamster19">Codeberg</a>
+
+</footer>
+</body>
+</html>
