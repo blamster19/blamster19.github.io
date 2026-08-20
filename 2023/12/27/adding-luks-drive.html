@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/scripts/temml/Temml-Local.css">
+  <script src="/assets/scripts/temml/temml.min.js" type="text/javascript"></script>
+  <script src="/assets/scripts/website-math.js" type="text/javascript"></script>
+  <noscript><strong>JavaScript on this site is used to render LaTeX math, but is non-essential.</strong></noscript>
+	<title>blamster19 - all stuff blamster</title>
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png">
+</head>
+<body>
+	<header>
+	<a href="/index.html">
+	blamster19 - all stuff blamster
+	</a>
+	<nav>
+	<a href="/about.html">About</a>
+	<a href="/links.html">Links</a>
+	</nav>
+	</header>
+	<main>
+<h1> Adding new drive to LUKS encrypted setup</h1>
+Published: 2023-12-27T21:59:30Z <br />
+Last modified: 2023-12-27T23:05:30Z <br />
+<h3>Contents</h3>
+<ol>
+
+</ol>
+<p>After two years of flawless usage of my ThinkPad E15 gen-2 I ran out of space on its default 256 GB SSD drive. For christmas I bought myself a new shiny <a href="https://www.kingston.com/en/ssd/kc3000-nvme-m2-solid-state-drive">1 TB M.2 SSD</a> and appended it to my LVM setup. The setup was:</p>
+<pre><code class="language-bash">$ lsblk
+NAME                     MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
+nvme1n1                  259:0    0 953,9G  0 disk
+nvme0n1                  259:1    0 238,5G  0 disk
+├─nvme0n1p1              259:2    0   476M  0 part  /boot/efi
+├─nvme0n1p2              259:3    0   954M  0 part  /boot
+└─nvme0n1p3              259:4    0 237,1G  0 part
+  └─nvme0n1p3_crypt      254:0    0 237,1G  0 crypt
+    ├─vg--1ThinkPad-swap 254:1    0  27,9G  0 lvm   [SWAP]
+    ├─vg--1ThinkPad-root 254:2    0  37,3G  0 lvm   /
+    ├─vg--1ThinkPad-var  254:3    0    14G  0 lvm   /var
+    ├─vg--1ThinkPad-tmp  254:4    0   1,9G  0 lvm   /tmp
+    └─vg--1ThinkPad-home 254:5    0   156G  0 lvm   /home
+</code></pre>
+<p>I followed <a href="https://unix.stackexchange.com/questions/618877/how-can-i-add-a-new-physical-volume-to-extend-an-existing-luks-encrypted-lvm-vo">this answer on Stack Exchange</a> tailoring it to my needs. After booting up with SSD in place I opened <em>GNOME Disks</em> utility and checked the name and path to my new asset, in my case, <code>/dev/nvme1n1</code> (visible in window titlebar upon selecting the drive). I also ran benchmark to find that the average read rate is 1,8 GB/s and write rate 1,0 GB/s. I also wanted to be able to unlock both drives at once, which I managed to do by using <a href="https://unix.stackexchange.com/questions/392284/using-a-single-passphrase-to-unlock-multiple-encrypted-disks-at-boot">this</a> tip.</p>
+<p>I proceeded to execute the following commands based on Stack Exchange:</p>
+<pre><code class="language-bash">$ sudo cryptsetup luksFormat /dev/nvme1
+$ sudo cryptsetup luksOpen /dev/nvme1
+$ sudo -e /etc/crypttab
+</code></pre>
+<p>in it, I had one line about my old drive. I copied it and changed the name and UUID to match the new drive data like so:</p>
+<pre><code>nvme0n1p3_crypt UUID=85c7f21e-b237-4ba6-84c3-11e737968a67 none luks,initramfs,keyscript=decrypt_keyctl
+nvme1n1_crypt UUID=81e37db2-a64e-47d6-ace0-b037416712c6 none luks,initramfs,keyscript=decrypt_keyctl
+</code></pre>
+<p>I took the UUID from the output of <code>$ sudo blkid</code>. The <code>initramfs</code> flag is very important; without it my new partition did not mount and the OS dropped to <em>initramfs</em> on every boot. I had to manually <code>cryptsetup luksOpen</code> it and exit to load into GUI. Solution was inspired by <a href="https://unix.stackexchange.com/questions/643344/linux-mint-20-with-luks-and-lvm-hangs-on-boot-after-upgrade">this problem</a>. Then I did:</p>
+<pre><code class="language-bash">$ sudo update-initramfs -c -k all
+$ sudo cryptsetup luksOpen /dev/nvme1n1 nvme1n1_crypt
+</code></pre>
+<p>and entered the new passphrase. Moving on:</p>
+<pre><code class="language-bash">$ sudo pvcreate /dev/mapper/nvme1n1_crypt
+$ sudo vgs
+</code></pre>
+<p>This showed me that my volume group is <code>vg-1ThinkPad</code>. Next I executed:</p>
+<pre><code class="language-bash">$ sudo vgextend vg-1ThinkPad /dev/mapper/nvme1n1_crypt
+</code></pre>
+<p>I wanted to create aditional partition for data with very original name <code>data</code> (I will leave moving <code>/home</code> fot another time), so I created and formatted it to ext4:</p>
+<pre><code class="language-bash">$ sudo lvcreate -l 100%FREE -n data vg-1ThinkPad /dev/mapper/nvme1n1_crypt
+$ sudo mkfs.ext4 /dev/vg-1ThinkPad/data
+</code></pre>
+<p>Finally I chose a mount point:</p>
+<pre><code class="language-bash">$ sudo mkdir /mnt/data
+$ sudo mount /dev/vg-1ThinkPad/data /mnt/data/
+</code></pre>
+<p>and added appropriate line to <code>/etc/fstab</code></p>
+<pre><code>/dev/mapper/vg--1ThinkPad-data /mnt/data            ext4    defaults   0    2
+</code></pre>
+<p>I installed <code>keyutils</code> from <em>apt</em> and updated <code>initramfs</code> again just in case and also run <code>update-grub</code>. And voilà. You have a fresh partition ready to be clogged with data.</p>
+</main>
+<footer>
+	<hr>
+	blamster19's little corner of the Net.<br>
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+	<img alt="Creative Commons License" src="/assets/images/ccbysa80x15.png" />
+	</a>
+	<br/>
+	All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.<br>
+	<a href="/feed.xml">Atom feed</a>
+	<a href="https://codeberg.org/blamster19">Codeberg</a>
+
+</footer>
+</body>
+</html>

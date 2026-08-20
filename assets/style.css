@@ -1,0 +1,176 @@
+:root {
+  --text: #d2dbef;
+  --subtext0: #becae8;
+  --subtext1: #a1b3e2;
+  --overlay0: #898ea5;
+  --overlay1: #7a7f99;
+  --overlay2: #666c87;
+  --surface0: #4f505e;
+  --surface1: #4f505e;
+  --surface2: #2f303d;
+  --base: #13181e;
+  --mantle: #181a30;
+  --crust: #1a1435;
+  --rebecca: #663399;
+  --pink: #ba55d3;
+  --blam: #512da8;
+  --slate: #7b68ee;
+  --dodger: #1e90ff;
+  --sky: #00bfff;
+}
+
+body {
+  color: var(--text);
+  background-color: var(--base);
+  font-family: Open Sans, Arial, sans-serif;
+  margin: 60px auto;
+  max-width: 740px;
+}
+
+a:visited {
+  color: var(--slate)
+}
+
+a, a:hover {
+  color: var(--dodger)
+}
+
+header {
+  /* text-align: right; */
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  overflow: hidden;
+  font-size: 22px;
+  background-color: var(--base);
+  box-shadow: 0 1px var(--overlay1);
+  border: 0;
+  height: 50px;
+  width: 740px;
+}
+
+header a {
+  display: block;
+  color: var(--pink);
+  /* float: right; */
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+header a:visited {
+  color: var(--pink)
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+nav a {
+  color: var(--text);
+}
+
+nav a:visited {
+  color: var(--text);
+}
+
+img {
+  max-width: 100%;
+}
+
+@media (max-width: 740px) {
+header {
+  position: static;
+  /* font-size: 15px; */
+  overflow: visible;
+  flex-wrap: wrap;
+  height: auto;
+  width: 100%;
+}
+
+header a {
+  display: inline-block;
+  float: none;
+  text-align: left;
+}
+
+header a:visited {
+  color: var(--pink)
+}
+
+nav {
+  display: inline-block;
+}
+
+body {
+  padding: 0px 5px;
+}
+}
+
+pre {
+  border: 1px solid var(--overlay1);
+  border-radius: 1px;
+  background-color: var(--mantle);
+  padding: 10px;
+}
+
+code {
+  margin: 0px;
+  white-space: pre-wrap;
+  overflow: auto;
+}
+
+blockquote {
+  color: var(--subtext0);
+  border-left: 4px solid var(--surface0);
+}
+
+h1 {
+  color: var(--subtext0);
+  font-size: 32px;
+}
+
+h2 {
+  color: var(--subtext1);
+  font-size: 26px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 14px;
+}
+
+ul {
+  list-style: disc;
+  list-style-position: inside;
+}
+
+li::marker {
+  color: var(--slate);
+}
+
+table {
+  color: var(--subtext1);
+  border: var(--overlay1);
+}
+
+table tr:nth-child(even) {
+  background-color: var(--surface0);
+}
+
+table th {
+  background-color: var(--surface1);
+}
+
+table td {
+  border: var(--overlay0);
+}
+
+hr {
+  margin-top: 1.5em;
+}

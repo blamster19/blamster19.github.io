@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/scripts/temml/Temml-Local.css">
+  <script src="/assets/scripts/temml/temml.min.js" type="text/javascript"></script>
+  <script src="/assets/scripts/website-math.js" type="text/javascript"></script>
+  <noscript><strong>JavaScript on this site is used to render LaTeX math, but is non-essential.</strong></noscript>
+	<title>blamster19 - all stuff blamster</title>
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png">
+</head>
+<body>
+	<header>
+	<a href="/index.html">
+	blamster19 - all stuff blamster
+	</a>
+	<nav>
+	<a href="/about.html">About</a>
+	<a href="/links.html">Links</a>
+	</nav>
+	</header>
+	<main>
+<h1> DIY Raspberry Pi ebook reader, part 1 - acquiring hardware</h1>
+Published: 2023-09-09T00:07:50Z <br />
+Last modified: 2023-09-10T00:51:48Z <br />
+<h3>Contents</h3>
+<ol>
+<li><a href="#let-x27-s-build">Let&#x27;s build</a>
+<li><a href="#goals">Goals</a>
+<li><a href="#the-innards">The innards</a>
+<li><a href="#the-design">The design</a>
+<li><a href="#closing-remarks">Closing remarks</a>
+</ol>
+<h2 id="let-x27-s-build">Let&#x27;s build</h2>
+<p>When I digged through ebook readers available on the market, it occured to me that every option is unappealing to me due to lack of customizability. Huge part of it lies in closed-source nature of those devices, which to me as an open source enthusiast is a major turn off. This, coupled with a hunk of free time during summer break, led me to the idea of building my own ebook reader. Happy with having a new project to hone my soldering skills, I enthusiastically set about making preparations.</p>
+<h2 id="goals">Goals</h2>
+<p>To instill some sense of direction into the project, I imagined it would be best to try and reach incremental goals. My first goal would be to connect every element one by one and check if every part works as intended. Next, a stage which will either make or break the whole endeavor, is to put everything together and make sure there are no conflicts between parts. And, for the last part, find some ebook software to actually use the thing, or, in the worst case, write one.</p>
+<h2 id="the-innards">The innards</h2>
+<h3>Core</h3>
+<p>I want my contraption to be both functional and similar in form to commercial counterparts. It has to be lightweight and handy, while allowing a degree of flexibility in customization. Since I have no infrastracture, means and skills to manufacture custom boards, I am bound to SBCs, which is not at all bad considering saved money and time. Ebook, like tablet or smartphone, is rather slim, which means very limited range of connection ports. There is no space and energy to spare for active cooling, so the chip has to run cold. Frankly, it does not have to be as powerful as aforementioned devices, because its primary purpose is to print text. Taking all that into consideration my vote went to <a href="https://www.raspberrypi.com/products/raspberry-pi-zero-w/">Raspberry Pi Zero W</a>. Arguments for this pick were my familiarity with Raspberry Pis, wealth of documentation and code, a range of ready-made extensions and ease of use. Integrated Wi-Fi allows for smooth hassle-free software deployment while also being a nice feature of the finished project. Model Zero is also much thinner and energy efficient than its full-sized siblings, making it a perfect fit for my application. Another chief asset of Zero is that it is powerful just enough to run a full Linux distribution, so no need to play with low level embedded. I would gladly take version 2, but sadly, they were out of order wherever I looked, and summer break is too short to wait. For convenience, I settled for Raspberry Pi Zero WH, with soldered header.</p>
+<h3>Power</h3>
+<p>Much to nobody&#x27;s surprise, there are myriad ways to power Raspberry Pi. Obviously, battery power is the only sensible choice, but even that can be done in many ways.<br />
+The most barebones solution is to construct appropriate circuit and plug in the source. The upside of it is being able to custom tailor every aspect of power supply. The downside is required knowledge and ease of screwing things up. I never feel confident enough in my tinkering abilities when it comes to powering things, so I immediately discarded this option.<br />
+Another popular solution is to cannibalise power bank. This is handy, as powerbanks come with charging module, so you just plug in the cable and you are set. However, powerbanks are often a little bulky and poorly regulated, which would cause a lot of random restarts upon voltage drops. After all, they are meant to store energy, not act as a power supply, so manufacturers could not care less about stability. Another missing thing is feedback - powerbanks do not return their status to devices they power, so going below certain threshold would always cause abrupt shutdown and, over time, murder the SBC.<br />
+This leads me to the third option, which is dedicated Raspberry Pi power supply board. These little circuits provide stable voltage, have integrated charger, output battery level and play nicely with Pi, due to the whole <a href="https://www.raspberrypi.com/news/introducing-raspberry-pi-hats/">HAT</a> design which enables stacking of extension boards.<br />
+After quite some time spent on researching the topic and looking through offers I chose <a href="https://wiki.dfrobot.com/UPS%20HAT%20for%20Raspberry%20Pi%20%20Zero%20%20SKU%3A%20DFR0528">DFRobot DFR0528 UPS HAT</a>. It fulfills all my requirements, is quite cheap and available. The official wiki seems to nicely explain how to enable battery level reading.</p>
+<p>When it comes to power source, the obvious choice would be either Li-Ion or Li-Pol battery. I wanted something thin, light and capacious, so I chose Li-Pol Akyga 3500 mAh 1S 3,7 V which I found in local eshop. The battery comes with connector cable ready to be soldered to UPS HAT.</p>
+<h3>Screen</h3>
+<p>From the beginning it was clear that I want e-paper dispay. E-paper is easy on eyes, legible in sunlight, extremely power efficient and looks cool. In this day and age there is an array of different sizes of e-papers made for Raspberry Pi. Since I want to build a reader, I need quite a lot of surface area, but the bigger the surface, the slower the refresh rate. This is further exacerbated when different colors come into play, where refresh procedure can take up to thirty seconds. This is unacceptable to me, so I decided I am content with fast but b/w display. Finally, I found a nice compromise, <a href="https://www.waveshare.com/7.5inch-e-Paper-HAT.htm">Waveshare 800x480 7.5inch E-Ink Display</a> which comes with a HAT. The screen communicates through SPI, has a refresh rate of 5 s, resolution of 800 by 480 pixels and dimensions of 163,2 by 97,92 mm.</p>
+<h3>Buttons</h3>
+<p>I almost forgot that in order to actually do stuff with my ebook, I need to control it somehow. For a while I thought I would build something from parts from my local (and physical) shop, until I found <a href="https://shop.pimoroni.com/products/button-shim">Pimoroni Button SHIM</a>, which seems perfect for my use case.</p>
+<h2 id="the-design">The design</h2>
+<p>This project takes on highly experimental approach, and I am not much of a planner when it comes to those things. I very much like to get my hands dirty first and construct something that works, then worry about the details (like how to actually put the parts in place). However, perhaps, if I want to write a few blog posts about my adventure, then the usual way of doing things is not very good for that. I should pave a roadmap and pull together some kind of schematic. Without further ado I fired up Blender and made models of my parts.<br />
+<img src="/assets/images/postimages/rpiebook/parts3d.png" alt="3D parts one after another" />
+The first thing that is striking is that UPS HAT&#x27;s pins are huge, sprouting 1 cm from both sides. This is non-ideal in my case, so I will have to unsolder that thing or find another way to slim down the board.<br />
+While the idea of HATs is amazing in its own right, stacking just one extension board on top of Pi makes the whole setup really thick. Luckily, every board uses just a few pins from the whole header, so the idea to connect appropriate pins with cables and position all boards horizontally is not completely bonkers. To further slim down the setup and to get better access to Pi pins, I chose to solder button SHIM to the underside. I had to keep all boards with buttons and ports at the edge and also remember not to strain the FFC cable too much. Taking all that into consideration I attempted to make a draft in Blender and am pretty happy with the looks of it.<br />
+<img src="/assets/images/postimages/rpiebook/layout3d.png" alt="3D parts one after another" /><br />
+The layout feels a bit off, because Raspberry Pi with its button shim are positioned to align the middle button with the center of the screen; likewise, e-paper connector is aligned with screen tape at the top (not rendered).</p>
+<h2 id="closing-remarks">Closing remarks</h2>
+<p>After fruitful team participation in robot competition I felt like taking up a solo project this time. I wanted to actually learn the process of doing project from start to finish, but now on my own terms. Ebook reader involves just a few parts, does not require much soldering, and poses a great opportunity to get a hands-on experience in electronics.<br />
+In the next step I will install and configure the OS, set up development environment, install necessary libraries and test all acquired boards.</p>
+</main>
+<footer>
+	<hr>
+	blamster19's little corner of the Net.<br>
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+	<img alt="Creative Commons License" src="/assets/images/ccbysa80x15.png" />
+	</a>
+	<br/>
+	All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.<br>
+	<a href="/feed.xml">Atom feed</a>
+	<a href="https://codeberg.org/blamster19">Codeberg</a>
+
+</footer>
+</body>
+</html>
