@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/scripts/temml/Temml-Local.css">
+  <script src="/assets/scripts/temml/temml.min.js" type="text/javascript"></script>
+  <script src="/assets/scripts/website-math.js" type="text/javascript"></script>
+  <noscript><strong>JavaScript on this site is used to render LaTeX math, but is non-essential.</strong></noscript>
+	<title>blamster19 - all stuff blamster</title>
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" href="/assets/favicon-16x16.png">
+</head>
+<body>
+	<header>
+	<a href="/index.html">
+	blamster19 - all stuff blamster
+	</a>
+	<nav>
+	<a href="/about.html">About</a>
+	<a href="/links.html">Links</a>
+	</nav>
+	</header>
+	<main>
+<h1> Migration to a new domain and hosting</h1>
+Published: 2026-09-01T16:16:10Z <br />
+Last modified: 2026-09-01T16:16:10Z <br />
+<h3>Contents</h3>
+<ol>
+<li><a href="#important-notice">Important notice</a>
+<li><a href="#what-changed">What changed</a>
+</ol>
+<h2 id="important-notice">Important notice</h2>
+<p>For regular readers and feed subscribers (if there are any), the new address is <a href="https://blamster19.net">https://blamster19.net</a>. The GitHub link <a href="https://blamster19.github.io">https://blamster19.github.io</a> will not be updated in the future.</p>
+<h2 id="what-changed">What changed</h2>
+<p>I migrated my site from GitHub Pages to <a href="https://codeberg.page/">Codeberg Pages</a>. This is a part of my larger move towards the digital independence from the Big Tech entities. The move was relatively painless, I just had to:</p>
+<ul>
+<li>create a new branch named <code>pages</code> holding a subtree located in the directory with the HTML files - Codeberg expects the HTML to reside in the root directory</li>
+<li>create a file <code>.domains</code> that lists the domains from which I want my site to be reachable (not sure if it&#x27;s needed now)</li>
+<li>push to a Codeberg repository named <code>pages</code></li>
+<li>create a webhook in the repository with the target URL being my custom domain and branch filter set to <code>pages</code></li>
+<li>create the DNS records in my registrar: <code>ALIAS codeberg.page.</code> and <code>TXT https://codeberg.org/blamster19/pages.git</code>, the second one with host <code>_git-pages-repository.www.blamster19.net</code></li>
+<li>pushing changes is done with <code>$ git subtree push --prefix pages codeberg gh-pages</code> where <code>pages</code> is the branch with HTML files, <code>codeberg</code> is the Codeberg remote and <code>gh-pages</code> is the repository containing all project files</li>
+</ul>
+<p>I got a domain from <a href="https://porkbun.com">https://porkbun.com</a>. Not much to say here, So far it looks good.</p>
+<p>Figuring those things out is very fun and rewarding. I definitely advise to try and set up a website <a href="/2026/08/20/static-blog-bash.html">from scratch</a> and hook it up to your own domain. I even had my own infamous DNS problems along the way!</p>
+</main>
+<footer>
+	<hr>
+	blamster19's little corner of the Net.<br>
+	<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+	<img alt="Creative Commons License" src="/assets/images/ccbysa80x15.png" />
+	</a>
+	<br/>
+	All content of this website is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless otherwise noted.<br>
+	<a href="/feed.xml">Atom feed</a>
+	<a href="https://codeberg.org/blamster19">Codeberg</a>
+
+</footer>
+</body>
+</html>
