@@ -6,7 +6,6 @@ categories:
 tags: crafts electronics
 excerpt: What is the best assignment project that is easy to do and useful? DIY smartwatch!
 ---
-
 # Motivation
 
 The pinnacle of microcontroller lab I attended this semester is my own project based on any microcontroller I could get my hands on. I thought hard about things that are cool but also useful, things which will not end up at the bottom of my drawer. Recently gathering data has been my jam, and this has led me to the idea of a smartwatch. I figured a gizmo measuring my heartbeat and saturation is a good starter and the rest will come later.
