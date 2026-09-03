@@ -6,7 +6,7 @@
 
 # You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-site_url="https://blamster19.github.io"
+site_url="https://blamster19.net"
 update_date=$1
 
 parse_body() {
@@ -35,9 +35,9 @@ print_entries() {
   done | sort -n | cut -f2-))
   for ((i = ${#files[@]} - 1; i >= 0; i--)); do
     local post_file="${files[i]}"
-    local date_published=$(grep '^date: ' "$post_file" | cut -d' ' -f2-)
+    local date_published=$(grep '^date: ' "$post_file" | cut -d' ' -f2- | date -f - -Iseconds)
     local date_modified=$(date -u -r $post_file +"%Y-%m-%dT%H:%M:%S+00:00")
-    local title=$(grep '^title: ' "$post_file" | cut -d' ' -f2-)
+    local title=$(grep '^title: ' "$post_file" | cut -d' ' -f2- | sed 's/^[[:space:]]*//')
     local excerpt=$(grep '^excerpt: ' "$post_file" | cut -d' ' -f2-)
     local url="$site_url/$(
       printf "%s" "$post_file" |
@@ -50,11 +50,13 @@ print_entries() {
 
     echo "<entry>"
     echo "  <title type=\"html\">$title</title>"
-    echo "  <link href=\"$url\" rel=\"alternate\" type=\"text/html\" title=\"Setting up Nextcloud on Raspberry Pi 3 Model B\"/>"
+    echo "  <link href=\"$url\" rel=\"alternate\" type=\"text/html\" title=\"$title\"/>"
     echo "  <published>$date_published</published>"
     echo "  <updated>$date_modified</updated>"
     echo "  <id>$url</id>"
-    echo "  <content type=\"html\" xml:base=\"$url\">$contents</content>"
+    echo "  <content type=\"html\" xml:base=\"$url\">"
+    echo $contents
+    echo "  </content>"
     echo "  <author>"
     echo "    <name>blamster19</name>"
     echo "  </author>"

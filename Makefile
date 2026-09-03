@@ -1,6 +1,7 @@
 PAGES_SRC := pages-md
 POSTS_SRC := _posts
-HTML_OUT := html
+HTML_OUT := docs
+INDEX_HTML := $(HTML_OUT)/index.html
 
 PAGES_MD := $(wildcard $(PAGES_SRC)/*.markdown)
 POSTS_MD := $(wildcard $(POSTS_SRC)/*.markdown)
@@ -26,8 +27,11 @@ $(POSTS_MD): | $(POSTS_HTML_DIRS)
 $(POSTS_HTML_DIRS):
 	mkdir -p $@
 
-$(HTML_OUT)/feed.xml:
-	/bin/bash ./feedgen.sh > $@
+$(HTML_OUT)/feed.xml: $(POSTS_MD)
+	/bin/bash ./feedgen.sh "$(shell date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')" > $@
+
+$(INDEX_HTML): $(PAGES_SRC)/index.markdown $(POSTS_MD)
+	/bin/bash ./blampub.sh $< > $@
 
 clean:
 	find $(HTML_OUT)/ -mindepth 1 -not -path '*/assets*' -delete
